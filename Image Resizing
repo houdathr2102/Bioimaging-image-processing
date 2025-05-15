@@ -15,4 +15,9 @@ imshow(MRIresized1);
 title('MRI resized image without antialiasing');
 subplot(3,1,3);
 imshow(MRIanti1);
-title('MRI resized image with antialiasing')
+title('MRI resized image with antialiasing');
+a=psnr(MRIresized1,MRI);
+fprintf('The psnr value for the enlarged image without antialiasing: %f\n',a);
+b=psnr(MRIanti1,MRI);
+fprintf('The psnr value for the enlarged image with antialiasing: %f',b);
+

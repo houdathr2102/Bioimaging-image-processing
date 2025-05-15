@@ -1,0 +1,16 @@
+% Apply a 10th order median filter to smooth the signal
+filteredLeadI = medfilt1(LeadI, 10);
+% Create a new figure for plotting
+figure;
+% Subplot for the original ECG signal
+subplot(2, 1, 1);  % This selects the first subplot area
+plot(ElapsedTime, LeadI, 'r');  % Red color for the original signal
+title('Original ECG Signal');
+xlabel('Elapsed Time (s)');
+ylabel('Amplitude (mV)');
+% Subplot for the filtered ECG signal
+subplot(2, 1, 2);  % This selects the second subplot area
+plot(ElapsedTime, filteredLeadI, 'r');  % Blue color for the filtered signal
+title('Filtered ECG Signal');
+xlabel('Elapsed Time (s)');
+ylabel('Amplitude (mV)');

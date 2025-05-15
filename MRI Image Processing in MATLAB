@@ -1,0 +1,78 @@
+
+load('T1_data_sorted.mat');
+frame_index = 9 ; % Choose any frame index from 1-10
+frame = im(:,:,frame_index); 
+imshow(frame,[],'InitialMagnification','fit');
+title(['T1-weighted Image, TR = ' num2str(tr(frame_index)) ' ms']);
+% First position
+x1 = 25; y1 = 28;
+[T1_1, S0_1] = fitT1(tr', squeeze(im(x1,y1,:)), 'y');
+title(['T1 Fitting at (', num2str(x1), ',', num2str(y1), ')']);
+legend('Data', 'Fitted Curve');
+
+% Second position
+x2 = 40; y2 = 35;
+[T1_2, S0_2] = fitT1(tr', squeeze(im(x2,y2,:)), 'y');
+title(['T1 Fitting at (', num2str(x2), ',', num2str(y2), ')']);
+legend('Data', 'Fitted Curve');
+[xdim, ydim, ~] = size(im);
+T1_map = zeros(xdim, ydim);
+S0_map = zeros(xdim, ydim);
+for i = 1:xdim
+    for j = 1:ydim
+        if im(i,j,1) > 0 
+            [T1_map(i,j), S0_map(i,j)] = fitT1(tr', squeeze(im(i,j,:)), 'n');
+        end
+    end
+end
+T1_map(T1_map > 7000) = 0;
+c = jet;
+c(1,:) = 0; 
+
+figure;
+imagesc(T1_map);
+colormap(c);
+colorbar;
+title('T1 Map (ms)');
+axis image;
+
+load("MRIbrainT2.mat");
+slice_num = 15; % Choose any slice from 1-30
+raw_slice = squeeze(raw(:,:,slice_num));
+mag_raw = abs(raw_slice);
+log_mag_raw = log(mag_raw + 1); % Add 1 to avoid log(0)
+
+figure;
+imagesc(log_mag_raw);
+colormap gray;
+axis image;
+title(['Magnitude of Raw Data (Slice ', num2str(slice_num), ') - Log Scale']);
+
+reconstructed = zeros(size(raw));
+for k = 1:size(raw,3)
+    reconstructed(:,:,k) = ifft2(raw(:,:,k));
+end
+
+recon_slice = squeeze(reconstructed(:,:,slice_num));
+mag_recon = abs(recon_slice);
+
+figure;
+imagesc(mag_recon);
+colormap gray;
+axis image;
+title(['Reconstructed Image (Slice ', num2str(slice_num), ') - No fftshift']);
+
+reconstructed_shifted = zeros(size(raw));
+for k = 1:size(raw,3)
+    reconstructed_shifted(:,:,k) = fftshift(ifft2(raw(:,:,k)));
+end
+
+% Display one reconstructed slice with fftshift
+recon_shifted_slice = squeeze(reconstructed_shifted(:,:,slice_num));
+mag_recon_shifted = abs(recon_shifted_slice);
+
+figure;
+imagesc(mag_recon_shifted);
+colormap gray;
+axis image;
+title(['Reconstructed Image (Slice ', num2str(slice_num), ') - With fftshift']);

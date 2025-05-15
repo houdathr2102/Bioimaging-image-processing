@@ -1,0 +1,99 @@
+% Load the echocardiography video
+V = VideoReader('Echovideo.mp4');
+
+% Obtain total number of frames
+Frames = V.NumFrames;
+
+% Play the video by reading one frame at a time
+while hasFrame(V)
+    frame = readFrame(V);       % Read the current frame
+    imshow(frame);              % Display the frame
+    pause(1 / V.FrameRate);     % Pause to simulate original video speed
+end
+% Compute grayscale intensity for all frames
+V = VideoReader('Echovideo.mp4');
+Frames = V.NumFrames;
+frameHeight = V.Height;
+frameWidth = V.Width;
+
+% Preallocate intensity matrix
+intensity = zeros(frameHeight, frameWidth, Frames, 'double');
+
+for j = 1:Frames
+    frame = read(V, j);
+    R = double(frame(:, :, 1));
+    G = double(frame(:, :, 2));
+    B = double(frame(:, :, 3));
+    intensity(:, :, j) = 0.3 * R + 0.6 * G + 0.11 * B;
+end
+
+%  Playback grayscale intensity video using implay
+implay(uint8(intensity));
+
+% Compute average intensity per frame
+% Compute average intensity for each of the 251 frames
+for k = 1:251
+    avg_intensity(k) = mean(mean(intensity(:,:,k)));
+end
+
+% Plot average intensity and mark 5 largest peaks
+% Plot the average intensity values
+figure;
+plot(avg_intensity, 'b');
+title('Figure 4: Average Intensity per Frame and Detected Peaks');
+xlabel('Frame Number');
+ylabel('Average Intensity');
+hold on;
+
+% Use findpeaks to detect peaks
+[allPeaks, allLocs] = findpeaks(avg_intensity, ...
+    'MinPeakDistance', 5, ...
+    'MinPeakHeight', mean(avg_intensity));  % refine this based on your data
+
+% Select the 5 largest peaks from those detected
+if length(allPeaks) >= 5
+    [sortedVals, sortIdx] = sort(allPeaks, 'descend');
+    top5Vals = sortedVals(1:5);
+    top5Locs = allLocs(sortIdx(1:5));
+else
+    top5Vals = allPeaks;
+    top5Locs = allLocs;
+end
+
+% Plot the top 5 peaks
+plot(top5Locs, top5Vals, 'ro', 'MarkerFaceColor', 'r');
+legend('Average Intensity', 'Top 5 Peaks');
+hold off;
+
+% Reload video to reset to the beginning
+V = VideoReader('Echovideo.mp4');
+
+% Read the first frame from the video
+frame1 = read(V, 1);
+
+% Display the original first frame 
+figure;
+imshow(frame1);
+title('Figure 1: First Frame from Echocardiography Video');
+
+%Extract the red, green, and blue color planes
+R = frame1(:, :, 1);  % Red channel
+G = frame1(:, :, 2);  % Green channel
+B = frame1(:, :, 3);  % Blue channel
+
+% Display the individual color channels
+figure;
+subplot(1,3,1);
+imshow(R);
+title('Figure 2A: Red Component');
+
+subplot(1,3,2);
+imshow(G);
+title('Figure 2B: Green Component');
+
+subplot(1,3,3);
+imshow(B);
+title('Figure 2C: Blue Component');
+
+
+

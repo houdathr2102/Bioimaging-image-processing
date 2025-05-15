@@ -1,0 +1,32 @@
+
+im=imread('Fluorescence_Image.jpg');
+imshow(im); 
+title('Fluorescence image');
+
+grim=rgb2gray(im);
+imshow(grim);
+title('Grayscale of fluoresence image');
+
+adgrim=imadjust(grim);
+imshow(adgrim);
+title('Adjusted intensity grayscale image');
+
+T=graythresh(adgrim);
+binim=imbinarize(adgrim,T);
+imshow(binim);
+title('binary image') 
+
+cbinim=bwareaopen(binim,50);
+imshow(cbinim);
+title('binary image with P>50 pixels');
+
+filledim=imfill(cbinim,"holes");
+imshow(filledim);
+title('filled binary image');
+
+perim=bwperim(filledim);
+imshow(perim);
+title('Extract the perimeter of the segmented nuclei ');
+
+[L n]=bwlabel(perim);
+fprintf('number of detected nuclei: %f',n);

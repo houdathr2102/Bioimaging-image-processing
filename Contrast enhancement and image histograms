@@ -1,0 +1,22 @@
+% Read the images
+originalImage = imread('Cancer_cells.tif');
+% Adjust contrast
+adjustedImage = imadjust(originalImage);
+% Display images
+figure;
+subplot(1,2,1);
+imshow(originalImage);
+title('Original Image');
+subplot(1,2,2);
+imshow(adjustedImage);
+title('Contrast Adjusted Image');
+% Display histograms
+figure;
+subplot(1,2,1);
+imhist(originalImage);
+title('Histogram of Original Image');
+ylim([0 80000]);
+subplot(1,2,2);
+imhist(adjustedImage);
+title('Histogram of Adjusted Image');
+ylim([0 80000]);

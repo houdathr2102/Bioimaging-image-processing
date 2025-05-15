@@ -1,0 +1,98 @@
+ P= phantom(256);
+ figure(1) ;
+ imshow(P);
+ title('2D Shepp-Logan Head Phantom');
+ %create projections
+ theta1=0:22:176;
+ theta2=0:10:170;
+ theta3=0:5:175;
+ theta4=0:2:178;
+ %num of projections
+ Num_projs1 = length(theta1);
+ Num_projs2 = length(theta2);
+ Num_projs3 = length(theta3);
+ Num_projs4 = length(theta4);
+ % Displaying the num of projections 
+disp(['Num_Projs1 = ', num2str(Num_projs1)]);
+disp(['Num_Projs2 = ', num2str(Num_projs2)]);
+disp(['Num_Projs3 = ', num2str(Num_projs3)]);
+disp(['Num_Projs4 = ', num2str(Num_projs4)]);
+
+% Generating projections using the Radon transform for varying angles
+ [r1,xp1]=radon(P,theta1);
+ [r2,xp2]=radon(P,theta2);
+ [r3,xp3]=radon(P,theta3);
+ [r4,xp4]=radon(P,theta4);
+ figure (2) ;
+subplot(1,4,1); 
+imagesc(theta1, xp1, r1); colormap(gray); colorbar;
+title('Figure 2a: RT Projections at Theta1');
+subplot(1,4,2); 
+imagesc(theta2, xp2, r2); colormap(gray); colorbar;
+title('Figure 2b: RT Projections Theta2');
+subplot(1,4,3); 
+imagesc(theta3, xp3, r3); colormap(gray); colorbar;
+title('Figure 2c: RT Projections Theta3');
+subplot(1,4,4); 
+imagesc(theta3, xp3, r3); colormap(gray); colorbar;
+title('Figure 2d: RT Projections Theta4');
+
+
+Rsize = max(size(P)); 
+
+%  reconstruct the image from projections using sbp
+Reconstructed1_SBP = iradon(r1, theta1, 'linear', 'none', Rsize);
+Reconstructed2_SBP = iradon(r2, theta2, 'linear', 'none', Rsize);
+Reconstructed3_SBP = iradon(r3, theta3, 'linear', 'none', Rsize);
+Reconstructed4_SBP = iradon(r4, theta4, 'linear', 'none', Rsize);
+%  reconstruct the image from projections using fbp
+Reconstructed1_FBP = iradon(r1, theta1, 'linear', 'Ram-Lak', Rsize);
+Reconstructed2_FBP = iradon(r2, theta2, 'linear', 'Ram-Lak', Rsize);
+Reconstructed3_FBP = iradon(r3, theta3, 'linear', 'Ram-Lak', Rsize);
+Reconstructed4_FBP = iradon(r4, theta4, 'linear', 'Ram-Lak', Rsize);
+
+figure (3) ;
+subplot(1,4,1); 
+imagesc(Reconstructed1_SBP); colormap(gray); colorbar;
+title('Figure 3a: Inverse RT Projections Theta1 SBP');
+subplot(1,4,2); 
+imagesc(Reconstructed2_SBP); colormap(gray); colorbar;
+title('Figure 3b: Inverse RT Projections Theta2 SBP');
+subplot(1,4,3); 
+imagesc(Reconstructed3_SBP); colormap(gray); colorbar;
+title('Figure 3c: Inverse RT Projections Theta3 SBP');
+subplot(1,4,4); 
+imagesc(Reconstructed4_SBP); colormap(gray); colorbar;
+title('Figure 3d: Inverse RT Projections Theta4 SBP');
+figure (4) ;
+subplot(1,4,1); 
+imagesc(Reconstructed1_FBP); colormap(gray); colorbar;
+title('Figure 4a: Inverse RT Projections at Theta1 FBP');
+subplot(1,4,2); 
+imagesc(Reconstructed2_FBP); colormap(gray); colorbar;
+title('Figure 4b: Inverse RT Projections Theta2 FBP');
+subplot(1,4,3); 
+imagesc(Reconstructed3_FBP); colormap(gray); colorbar;
+title('Figure 4c: Inverse RT Projections Theta3 FBP');
+subplot(1,4,4); 
+imagesc(Reconstructed4_FBP); colormap(gray); colorbar;
+title('Figure 4d: Inverse RT Projections Theta4 FBP');
+
+% Computing mean square error between reconstructed images and the original phantom image
+Error1_SBP = immse(Reconstructed1_SBP, P); 
+Error2_SBP = immse(Reconstructed2_SBP, P);  
+Error3_SBP = immse(Reconstructed3_SBP, P);  
+Error4_SBP = immse(Reconstructed4_SBP, P);
+Error1_FBP = immse(Reconstructed1_FBP, P);  
+Error2_FBP = immse(Reconstructed2_FBP, P) ;
+Error3_FBP = immse(Reconstructed3_FBP, P) ;
+Error4_FBP = immse(Reconstructed4_FBP, P);
+disp(['Error1_SBP =',num2str(Error1_SBP)] );
+disp(['Error2_SBP =',num2str(Error2_SBP)] );
+disp(['Error3_SBP =',num2str(Error3_SBP)] );
+disp(['Error4_SBP =',num2str(Error4_SBP)] );
+disp(['Error1_FBP =',num2str(Error1_FBP)] );
+disp(['Error2_FBP =',num2str(Error2_FBP)] );
+disp(['Error3_FBP =',num2str(Error3_FBP)] );
+disp(['Error4_FBP =',num2str(Error4_FBP)] );
+

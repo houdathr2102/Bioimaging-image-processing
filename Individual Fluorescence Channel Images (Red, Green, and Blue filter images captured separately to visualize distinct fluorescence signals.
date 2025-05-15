@@ -1,0 +1,8 @@
+% Read the images
+RedImage = imread('Red_Filter_Image.jpg');   
+GreenImage = imread('Green_Filter_Image.jpg');
+BlueImage = imread('Blue_Filter_Image.jpg');
+
+% Call the Overlay function
+RGB_Image = Overlay(RedImage, GreenImage, BlueImage);
+
